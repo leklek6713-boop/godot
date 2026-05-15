@@ -1,0 +1,563 @@
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg1:var(--color-background-primary);--bg2:var(--color-background-secondary);--bg3:var(--color-background-tertiary);--txt:var(--color-text-primary);--txt2:var(--color-text-secondary);--txt3:var(--color-text-tertiary);--bord:var(--color-border-tertiary);--bord2:var(--color-border-secondary);--accent:#7C6EF7;--accent2:#5B4FD4;--green:#3B9E6E;--amber:#C4871A;--red:#C0392B}
+  body{font-family:var(--font-sans);background:transparent;color:var(--txt);font-size:14px;line-height:1.5}
+  .shell{display:flex;height:620px;border:0.5px solid var(--bord2);border-radius:var(--border-radius-lg);overflow:hidden}
+  .sidebar{width:210px;flex-shrink:0;background:var(--bg2);border-right:0.5px solid var(--bord);display:flex;flex-direction:column;padding:0}
+  .sb-logo{padding:16px 14px 12px;border-bottom:0.5px solid var(--bord);display:flex;align-items:center;gap:8px}
+  .sb-logo .ico{width:28px;height:28px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
+  .sb-logo .name{font-size:13px;font-weight:500;line-height:1.2}
+  .sb-logo .name span{display:block;font-size:10px;color:var(--txt2);font-weight:400}
+  .sb-nav{flex:1;padding:8px 6px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+  .sb-section{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;padding:8px 8px 4px;font-weight:500}
+  .sb-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12.5px;color:var(--txt2);border:none;background:none;width:100%;text-align:left;transition:background .15s,color .15s}
+  .sb-item:hover{background:var(--bg3);color:var(--txt)}
+  .sb-item.active{background:rgba(124,110,247,.13);color:var(--accent);font-weight:500}
+  .sb-item i{font-size:15px;flex-shrink:0}
+  .sb-item .badge{margin-left:auto;background:var(--accent);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px}
+  .sb-user{padding:10px 12px;border-top:0.5px solid var(--bord);display:flex;align-items:center;gap:8px}
+  .sb-user .av{width:28px;height:28px;border-radius:50%;background:rgba(124,110,247,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent)}
+  .sb-user .info{flex:1;min-width:0}
+  .sb-user .info .nm{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sb-user .info .role{font-size:10px;color:var(--txt3)}
+  .main{flex:1;overflow-y:auto;background:var(--bg3)}
+  .topbar{padding:12px 20px;background:var(--bg2);border-bottom:0.5px solid var(--bord);display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+  .topbar .search{flex:1;max-width:340px;position:relative}
+  .topbar .search i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:14px}
+  .topbar .search input{width:100%;padding:7px 10px 7px 30px;border-radius:var(--border-radius-md);border:0.5px solid var(--bord);background:var(--bg3);color:var(--txt);font-size:12.5px;outline:none}
+  .topbar .search input:focus{border-color:var(--accent)}
+  .topbar .actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .btn-sm{padding:5px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--bord2);background:var(--bg1);cursor:pointer;font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:5px;transition:background .15s,color .15s}
+  .btn-sm:hover{background:var(--bg3);color:var(--txt)}
+  .btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn-accent:hover{background:var(--accent2);color:#fff}
+  .content{padding:20px}
+  .page{display:none}
+  .page.active{display:block}
+  /* DASHBOARD */
+  .dash-greeting{margin-bottom:18px}
+  .dash-greeting h1{font-size:18px;font-weight:500;margin-bottom:3px}
+  .dash-greeting p{font-size:13px;color:var(--txt2)}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+  .stat-card{background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-lg);padding:12px 14px}
+  .stat-card .lbl{font-size:11px;color:var(--txt3);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+  .stat-card .val{font-size:20px;font-weight:500}
+  .stat-card .sub{font-size:11px;color:var(--txt2);margin-top:2px}
+  .section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .section-hd h2{font-size:14px;font-weight:500}
+  .section-hd a{font-size:12px;color:var(--accent);cursor:pointer;text-decoration:none}
+  /* SYSTEMS GRID */
+  .systems-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+  .sys-card{background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-md);padding:10px 10px 8px;cursor:pointer;transition:border-color .15s,transform .1s;display:flex;flex-direction:column;gap:4px}
+  .sys-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .sys-card .sys-ico{font-size:18px;margin-bottom:2px}
+  .sys-card .sys-name{font-size:11.5px;font-weight:500;line-height:1.2}
+  .sys-card .sys-tag{font-size:10px;color:var(--txt3)}
+  /* COURSES */
+  .courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+  .course-card{background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-lg);padding:14px;cursor:pointer;transition:border-color .15s}
+  .course-card:hover{border-color:var(--accent)}
+  .course-card .cc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .course-card .cc-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .course-card .cc-lvl{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500}
+  .lvl-ini{background:rgba(59,158,110,.15);color:#3B9E6E}
+  .lvl-int{background:rgba(196,135,26,.15);color:#C4871A}
+  .lvl-adv{background:rgba(192,57,43,.15);color:#C0392B}
+  .course-card h3{font-size:13px;font-weight:500;margin-bottom:4px}
+  .course-card p{font-size:11.5px;color:var(--txt2);margin-bottom:10px;line-height:1.4}
+  .prog-bar{height:3px;background:var(--bg3);border-radius:2px}
+  .prog-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .4s}
+  .prog-txt{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--txt3)}
+  /* PROBLEMS */
+  .prob-list{display:flex;flex-direction:column;gap:8px}
+  .prob-item{background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-md);padding:12px 14px;cursor:pointer;transition:border-color .15s;display:flex;gap:12px}
+  .prob-item:hover{border-color:var(--bord2)}
+  .prob-badge{flex-shrink:0;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .prob-badge.solved{background:rgba(59,158,110,.15)}
+  .prob-badge.open{background:rgba(196,135,26,.15)}
+  .prob-badge.hot{background:rgba(192,57,43,.15)}
+  .prob-body{flex:1}
+  .prob-body h4{font-size:12.5px;font-weight:500;margin-bottom:2px}
+  .prob-body p{font-size:11.5px;color:var(--txt2);line-height:1.4}
+  .prob-meta{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+  .tag{font-size:10px;padding:2px 7px;border-radius:8px;background:var(--bg3);color:var(--txt2);border:0.5px solid var(--bord)}
+  .prob-stats{flex-shrink:0;text-align:right;font-size:11px;color:var(--txt3)}
+  .prob-stats .val{font-size:13px;font-weight:500;color:var(--txt2);display:block}
+  /* EDITOR */
+  .editor-wrap{background:#0d1117;border-radius:var(--border-radius-lg);overflow:hidden;border:0.5px solid #30363d}
+  .editor-head{background:#161b22;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #30363d}
+  .editor-head span{font-size:12px;color:#8b949e}
+  .editor-head .fname{color:#e6edf3;font-size:12px;font-weight:500}
+  .editor-head .copy-btn{margin-left:auto;padding:4px 10px;border-radius:5px;border:1px solid #30363d;background:#21262d;color:#8b949e;cursor:pointer;font-size:11px}
+  .editor-head .copy-btn:hover{background:#30363d;color:#e6edf3}
+  .code-area{padding:14px;font-family:var(--font-mono);font-size:12px;line-height:1.7;color:#e6edf3;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto}
+  .kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.cm{color:#8b949e;font-style:italic}.num{color:#79c0ff}.type{color:#ffa657}.var{color:#e6edf3}
+  /* DOC SECTION */
+  .doc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .doc-card{background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-lg);padding:14px;cursor:pointer;transition:border-color .15s}
+  .doc-card:hover{border-color:var(--accent)}
+  .doc-card .dc-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .doc-card .dc-ico{width:30px;height:30px;background:rgba(124,110,247,.12);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:15px}
+  .doc-card h3{font-size:13px;font-weight:500}
+  .doc-card p{font-size:11.5px;color:var(--txt2);line-height:1.5}
+  .doc-card .dc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+  /* PROGRESS TRAIL */
+  .trail-wrap{background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:20px}
+  .trail-title{font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  .trail-steps{display:flex;gap:0;align-items:center}
+  .ts-node{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+  .ts-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;border:1.5px solid var(--bord);background:var(--bg3);color:var(--txt3);transition:all .2s}
+  .ts-circle.done{background:var(--accent);border-color:var(--accent);color:#fff}
+  .ts-circle.current{border-color:var(--accent);color:var(--accent);background:rgba(124,110,247,.1)}
+  .ts-label{font-size:10px;color:var(--txt3);text-align:center;max-width:60px;line-height:1.3}
+  .ts-line{flex:1;height:1.5px;background:var(--bord);max-width:32px;margin:0 -4px;position:relative;top:-10px}
+  .ts-line.done{background:var(--accent)}
+  /* NOTIF */
+  .notif-dot{width:6px;height:6px;border-radius:50%;background:#E24B4A;flex-shrink:0}
+  /* CODE SNIPPET */
+  .snippet-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+  .snippet-card{background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-md);overflow:hidden;cursor:pointer;transition:border-color .15s}
+  .snippet-card:hover{border-color:var(--accent)}
+  .snippet-head{padding:8px 12px;display:flex;align-items:center;gap:6px}
+  .snippet-head .sname{font-size:12px;font-weight:500}
+  .snippet-head .stag{margin-left:auto;font-size:10px;padding:1px 6px;border-radius:6px;background:rgba(124,110,247,.1);color:var(--accent)}
+  .snippet-code{background:#0d1117;padding:8px 12px;font-family:var(--font-mono);font-size:11px;line-height:1.6;color:#e6edf3;white-space:pre}
+</style>
+
+<div class="shell" role="main" aria-label="GodotScript Academy — plataforma de ensino">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sb-logo">
+      <div class="ico"><i class="ti ti-device-gamepad-2" aria-hidden="true"></i></div>
+      <div class="name">GodotScript<span>Academy</span></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Principal</div>
+      <button class="sb-item active" onclick="nav('dashboard')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</button>
+      <button class="sb-item" onclick="nav('cursos')"><i class="ti ti-book" aria-hidden="true"></i>Cursos<span class="badge">12</span></button>
+      <button class="sb-item" onclick="nav('sistemas')"><i class="ti ti-puzzle" aria-hidden="true"></i>Sistemas Prontos</button>
+      <button class="sb-item" onclick="nav('problemas')"><i class="ti ti-bug" aria-hidden="true"></i>Problemas & Soluções<span class="badge">7</span></button>
+      <div class="sb-section">Referência</div>
+      <button class="sb-item" onclick="nav('docs')"><i class="ti ti-file-text" aria-hidden="true"></i>Documentação</button>
+      <button class="sb-item" onclick="nav('editor')"><i class="ti ti-code" aria-hidden="true"></i>Editor GDScript</button>
+      <button class="sb-item" onclick="nav('snippets')"><i class="ti ti-brackets" aria-hidden="true"></i>Snippets</button>
+      <div class="sb-section">Comunidade</div>
+      <button class="sb-item" onclick="nav('ranking')"><i class="ti ti-trophy" aria-hidden="true"></i>Ranking</button>
+      <button class="sb-item" onclick="nav('exercicios')"><i class="ti ti-target" aria-hidden="true"></i>Exercícios & Quiz</button>
+    </div>
+    <div class="sb-user">
+      <div class="av">DC</div>
+      <div class="info">
+        <div class="nm">Dev Colaborador</div>
+        <div class="role">Intermediário · 840 XP</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN AREA -->
+  <div class="main">
+    <div class="topbar">
+      <div class="search">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input type="text" placeholder="Buscar sistemas, erros, funções GDScript...">
+      </div>
+      <div class="actions">
+        <button class="btn-sm"><i class="ti ti-bell" aria-hidden="true"></i><span class="notif-dot"></span></button>
+        <button class="btn-sm btn-accent" onclick="sendPrompt('Quero ver a arquitetura técnica completa da plataforma GodotScript Academy')"><i class="ti ti-plus" aria-hidden="true"></i>Contribuir ↗</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="dash-greeting">
+          <h1>Bem-vindo de volta, Dev 👾</h1>
+          <p>Continue de onde parou — você está a 3 lições de concluir <strong>Máquina de Estados</strong>.</p>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="lbl"><i class="ti ti-flame" aria-hidden="true" style="color:#E24B4A;font-size:13px"></i>Sequência</div>
+            <div class="val">12 dias</div>
+            <div class="sub">Recorde: 28 dias</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl"><i class="ti ti-check" aria-hidden="true" style="color:#3B9E6E;font-size:13px"></i>Lições</div>
+            <div class="val">47</div>
+            <div class="sub">+3 esta semana</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl"><i class="ti ti-star" aria-hidden="true" style="color:#C4871A;font-size:13px"></i>XP Total</div>
+            <div class="val">840</div>
+            <div class="sub">Nível intermediário</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl"><i class="ti ti-users" aria-hidden="true" style="color:var(--accent);font-size:13px"></i>Contribuições</div>
+            <div class="val">8</div>
+            <div class="sub">Soluções postadas</div>
+          </div>
+        </div>
+
+        <!-- TRAIL -->
+        <div class="trail-wrap">
+          <div class="trail-title"><i class="ti ti-road" aria-hidden="true" style="color:var(--accent)"></i>Trilha atual: GDScript Intermediário</div>
+          <div class="trail-steps">
+            <div class="ts-node"><div class="ts-circle done"><i class="ti ti-check" aria-hidden="true" style="font-size:12px"></i></div><div class="ts-label">Variáveis</div></div>
+            <div class="ts-line done"></div>
+            <div class="ts-node"><div class="ts-circle done"><i class="ti ti-check" aria-hidden="true" style="font-size:12px"></i></div><div class="ts-label">Funções</div></div>
+            <div class="ts-line done"></div>
+            <div class="ts-node"><div class="ts-circle done"><i class="ti ti-check" aria-hidden="true" style="font-size:12px"></i></div><div class="ts-label">Sinais</div></div>
+            <div class="ts-line done"></div>
+            <div class="ts-node"><div class="ts-circle current">4</div><div class="ts-label">Máquina de estados</div></div>
+            <div class="ts-line"></div>
+            <div class="ts-node"><div class="ts-circle">5</div><div class="ts-label">Padrões</div></div>
+            <div class="ts-line"></div>
+            <div class="ts-node"><div class="ts-circle">6</div><div class="ts-label">Otimização</div></div>
+            <div class="ts-line"></div>
+            <div class="ts-node"><div class="ts-circle">7</div><div class="ts-label">Shaders</div></div>
+          </div>
+        </div>
+
+        <!-- SISTEMAS RÁPIDOS -->
+        <div class="section-hd">
+          <h2>Criar sistema rápido</h2>
+          <a onclick="nav('sistemas')">Ver todos →</a>
+        </div>
+        <div class="systems-grid">
+          <div class="sys-card" onclick="sendPrompt('Mostre o sistema completo de Personagem 2D em GDScript com código linha por linha')"><div class="sys-ico">🧍</div><div class="sys-name">Personagem 2D</div><div class="sys-tag">iniciante</div></div>
+          <div class="sys-card" onclick="sendPrompt('Mostre o sistema de Movimentação 2D com GDScript completo')"><div class="sys-ico">🎮</div><div class="sys-name">Movimentação</div><div class="sys-tag">iniciante</div></div>
+          <div class="sys-card" onclick="sendPrompt('Como criar sistema de Pulo em GDScript na Godot 4')"><div class="sys-ico">⬆️</div><div class="sys-name">Pulo & Dash</div><div class="sys-tag">iniciante</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Ataque 2D com animações em GDScript Godot 4')"><div class="sys-ico">⚔️</div><div class="sys-name">Ataque</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Inimigos com IA simples em GDScript Godot 4')"><div class="sys-ico">👾</div><div class="sys-name">Inimigos & IA</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Máquina de estados finita em GDScript Godot 4 completa')"><div class="sys-ico">🔁</div><div class="sys-name">State Machine</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Inventário 2D com GDScript Godot 4')"><div class="sys-ico">🎒</div><div class="sys-name">Inventário</div><div class="sys-tag">avançado</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Save e Load com GDScript Godot 4')"><div class="sys-ico">💾</div><div class="sys-name">Save System</div><div class="sys-tag">avançado</div></div>
+        </div>
+
+        <!-- CURSOS EM PROGRESSO -->
+        <div class="section-hd">
+          <h2>Continuar estudando</h2>
+          <a onclick="nav('cursos')">Ver todos →</a>
+        </div>
+        <div class="courses-grid">
+          <div class="course-card" onclick="nav('cursos')">
+            <div class="cc-head">
+              <div class="cc-icon" style="background:rgba(124,110,247,.12)">📘</div>
+              <span class="cc-lvl lvl-int">Intermediário</span>
+            </div>
+            <h3>GDScript do Zero ao Avançado</h3>
+            <p>Aprenda GDScript de forma completa com projetos reais na Godot 4.</p>
+            <div class="prog-bar"><div class="prog-fill" style="width:62%"></div></div>
+            <div class="prog-txt"><span>62% concluído</span><span>18/29 lições</span></div>
+          </div>
+          <div class="course-card" onclick="nav('cursos')">
+            <div class="cc-head">
+              <div class="cc-icon" style="background:rgba(59,158,110,.12)">🗺️</div>
+              <span class="cc-lvl lvl-ini">Iniciante</span>
+            </div>
+            <h3>TileMap & Level Design</h3>
+            <p>Domine o sistema de TileMap da Godot 4 para criar fases incríveis.</p>
+            <div class="prog-bar"><div class="prog-fill" style="width:30%"></div></div>
+            <div class="prog-txt"><span>30% concluído</span><span>6/20 lições</span></div>
+          </div>
+          <div class="course-card" onclick="nav('cursos')">
+            <div class="cc-head">
+              <div class="cc-icon" style="background:rgba(196,135,26,.12)">⚡</div>
+              <span class="cc-lvl lvl-adv">Avançado</span>
+            </div>
+            <h3>Otimização & Performance</h3>
+            <p>Técnicas avançadas de profiling e otimização para jogos Indie 2D.</p>
+            <div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div>
+            <div class="prog-txt"><span>Não iniciado</span><span>0/15 lições</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CURSOS PAGE -->
+      <div class="page" id="page-cursos">
+        <div class="section-hd" style="margin-bottom:16px">
+          <h2>Todos os cursos</h2>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" style="font-size:11px">Iniciante</button>
+            <button class="btn-sm" style="font-size:11px">Intermediário</button>
+            <button class="btn-sm" style="font-size:11px">Avançado</button>
+          </div>
+        </div>
+        <div class="courses-grid" style="grid-template-columns:repeat(2,1fr)">
+          <div class="course-card"><div class="cc-head"><div class="cc-icon" style="background:rgba(124,110,247,.12)">📘</div><span class="cc-lvl lvl-ini">Iniciante</span></div><h3>Fundamentos do GDScript</h3><p>Variáveis, tipos, funções, loops, condicionais e primeiros scripts.</p><div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div><div class="prog-txt"><span>Concluído ✓</span><span>12/12</span></div></div>
+          <div class="course-card"><div class="cc-head"><div class="cc-icon" style="background:rgba(59,158,110,.12)">🎮</div><span class="cc-lvl lvl-ini">Iniciante</span></div><h3>Primeiro Jogo 2D</h3><p>Crie um jogo completo do zero: personagem, inimigos, pontuação.</p><div class="prog-bar"><div class="prog-fill" style="width:85%"></div></div><div class="prog-txt"><span>85%</span><span>17/20</span></div></div>
+          <div class="course-card"><div class="cc-head"><div class="cc-icon" style="background:rgba(196,135,26,.12)">🔗</div><span class="cc-lvl lvl-int">Intermediário</span></div><h3>Sinais & Autoload</h3><p>Comunicação entre nós, padrão Observer e Singletons.</p><div class="prog-bar"><div class="prog-fill" style="width:62%"></div></div><div class="prog-txt"><span>62%</span><span>8/13</span></div></div>
+          <div class="course-card"><div class="cc-head"><div class="cc-icon" style="background:rgba(124,110,247,.12)">🔁</div><span class="cc-lvl lvl-int">Intermediário</span></div><h3>Máquinas de Estado</h3><p>StateMachine reutilizável com herança e polimorfismo em GDScript.</p><div class="prog-bar"><div class="prog-fill" style="width:40%"></div></div><div class="prog-txt"><span>40%</span><span>4/10</span></div></div>
+          <div class="course-card"><div class="cc-head"><div class="cc-icon" style="background:rgba(192,57,43,.12)">⚡</div><span class="cc-lvl lvl-adv">Avançado</span></div><h3>Shaders GLSL na Godot</h3><p>Efeitos visuais, shaders 2D, iluminação e pós-processamento.</p><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div><div class="prog-txt"><span>Não iniciado</span><span>0/18</span></div></div>
+          <div class="course-card"><div class="cc-head"><div class="cc-icon" style="background:rgba(59,158,110,.12)">🌐</div><span class="cc-lvl lvl-adv">Avançado</span></div><h3>Multiplayer com ENet</h3><p>Redes, sincronização, lobby e matchmaking básico.</p><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div><div class="prog-txt"><span>Não iniciado</span><span>0/22</span></div></div>
+        </div>
+      </div>
+
+      <!-- PROBLEMAS -->
+      <div class="page" id="page-problemas">
+        <div class="section-hd" style="margin-bottom:16px">
+          <h2>Problemas & Soluções</h2>
+          <button class="btn-sm btn-accent" onclick="sendPrompt('Como registrar um novo problema na plataforma GodotScript Academy?')"><i class="ti ti-plus" aria-hidden="true"></i>Novo problema ↗</button>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+          <button class="btn-sm" style="font-size:10px">Todos</button>
+          <button class="btn-sm" style="font-size:10px">GDScript</button>
+          <button class="btn-sm" style="font-size:10px">Física</button>
+          <button class="btn-sm" style="font-size:10px">Animações</button>
+          <button class="btn-sm" style="font-size:10px">TileMap</button>
+          <button class="btn-sm" style="font-size:10px">Sinais</button>
+          <button class="btn-sm" style="font-size:10px">Câmera</button>
+          <button class="btn-sm" style="font-size:10px">Shaders</button>
+        </div>
+        <div class="prob-list">
+          <div class="prob-item" onclick="sendPrompt('Explique o erro Invalid get index no GDScript Godot 4 e como resolver')">
+            <div class="prob-badge solved"><i class="ti ti-check" aria-hidden="true" style="color:#3B9E6E;font-size:14px"></i></div>
+            <div class="prob-body">
+              <h4>Invalid get index 'velocity' on base 'Nil'</h4>
+              <p>Ocorre ao tentar acessar uma variável antes do nó estar pronto na cena. Solução com @onready.</p>
+              <div class="prob-meta"><span class="tag">GDScript</span><span class="tag">@onready</span><span class="tag">null</span></div>
+            </div>
+            <div class="prob-stats"><span class="val">14</span>soluções</div>
+          </div>
+          <div class="prob-item" onclick="sendPrompt('Personagem atravessa o chão na Godot 4, como resolver problemas de colisão com CharacterBody2D?')">
+            <div class="prob-badge open"><i class="ti ti-alert-triangle" aria-hidden="true" style="color:#C4871A;font-size:14px"></i></div>
+            <div class="prob-body">
+              <h4>Personagem atravessa o chão intermitentemente</h4>
+              <p>CharacterBody2D com move_and_slide() cruza plataformas em alta velocidade. Problema de collision detection.</p>
+              <div class="prob-meta"><span class="tag">Física</span><span class="tag">CharacterBody2D</span><span class="tag">colisão</span></div>
+            </div>
+            <div class="prob-stats"><span class="val">3</span>soluções</div>
+          </div>
+          <div class="prob-item" onclick="sendPrompt('Animação não sincroniza com movimento no GDScript Godot 4')">
+            <div class="prob-badge hot"><i class="ti ti-flame" aria-hidden="true" style="color:#C0392B;font-size:14px"></i></div>
+            <div class="prob-body">
+              <h4>AnimationPlayer não sincroniza com movimento</h4>
+              <p>Animação de corrida dispara fora de sincronia com a velocidade real do personagem.</p>
+              <div class="prob-meta"><span class="tag">Animações</span><span class="tag">AnimationPlayer</span><span class="tag">sincronização</span></div>
+            </div>
+            <div class="prob-stats"><span class="val">7</span>soluções</div>
+          </div>
+          <div class="prob-item" onclick="sendPrompt('Sinal não conecta entre cenas na Godot 4, como depurar?')">
+            <div class="prob-badge solved"><i class="ti ti-check" aria-hidden="true" style="color:#3B9E6E;font-size:14px"></i></div>
+            <div class="prob-body">
+              <h4>Sinal personalizado não dispara entre cenas</h4>
+              <p>Custom signal emitido numa cena filha não é captado pelo nó pai. Problema de escopo.</p>
+              <div class="prob-meta"><span class="tag">Sinais</span><span class="tag">cenas</span><span class="tag">escopo</span></div>
+            </div>
+            <div class="prob-stats"><span class="val">9</span>soluções</div>
+          </div>
+          <div class="prob-item" onclick="sendPrompt('TileMap com AutoTile não desenha corretamente na Godot 4')">
+            <div class="prob-badge open"><i class="ti ti-alert-triangle" aria-hidden="true" style="color:#C4871A;font-size:14px"></i></div>
+            <div class="prob-body">
+              <h4>TileSet AutoTile ignora bordas diagonais</h4>
+              <p>Ao usar bitmask no TileSet, os tiles de canto não conectam corretamente com o terreno.</p>
+              <div class="prob-meta"><span class="tag">TileMap</span><span class="tag">AutoTile</span><span class="tag">bitmask</span></div>
+            </div>
+            <div class="prob-stats"><span class="val">2</span>soluções</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDITOR PAGE -->
+      <div class="page" id="page-editor">
+        <div class="section-hd" style="margin-bottom:14px">
+          <h2>Editor GDScript</h2>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" style="font-size:11px">Snippets</button>
+            <button class="btn-sm btn-accent" style="font-size:11px" onclick="sendPrompt('Como funciona o sistema de execução simulada de GDScript na plataforma?')">▶ Simular ↗</button>
+          </div>
+        </div>
+        <div class="editor-wrap">
+          <div class="editor-head">
+            <i class="ti ti-file-code" aria-hidden="true" style="color:#8b949e;font-size:14px"></i>
+            <span class="fname">personagem.gd</span>
+            <span style="color:#3B9E6E;font-size:11px;margin-left:4px">● Godot 4.6</span>
+            <button class="copy-btn" onclick="sendPrompt('Explique este código de personagem 2D linha por linha em GDScript')">Explicar ↗</button>
+          </div>
+          <div class="code-area"><span class="kw">extends</span> <span class="type">CharacterBody2D</span>
+
+<span class="cm">## Personagem 2D com movimentação completa</span>
+<span class="cm">## Godot 4.6 — GDScript 2.0</span>
+
+<span class="kw">const</span> <span class="var">SPEED</span> = <span class="num">200.0</span>
+<span class="kw">const</span> <span class="var">JUMP_VELOCITY</span> = <span class="num">-400.0</span>
+<span class="kw">const</span> <span class="var">DASH_SPEED</span> = <span class="num">500.0</span>
+
+<span class="kw">var</span> <span class="var">can_dash</span>: <span class="type">bool</span> = <span class="kw">true</span>
+<span class="kw">var</span> <span class="var">is_dashing</span>: <span class="type">bool</span> = <span class="kw">false</span>
+
+<span class="fn">@onready</span> <span class="kw">var</span> <span class="var">anim</span> = <span class="fn">$AnimationPlayer</span>
+<span class="fn">@onready</span> <span class="kw">var</span> <span class="var">sprite</span> = <span class="fn">$Sprite2D</span>
+<span class="fn">@onready</span> <span class="kw">var</span> <span class="var">dash_timer</span> = <span class="fn">$DashTimer</span>
+
+<span class="kw">func</span> <span class="fn">_physics_process</span>(delta: <span class="type">float</span>) -> <span class="type">void</span>:
+    <span class="cm"># Aplicar gravidade</span>
+    <span class="kw">if not</span> is_on_floor():
+        velocity += get_gravity() * delta
+
+    <span class="cm"># Pulo</span>
+    <span class="kw">if</span> <span class="fn">Input</span>.is_action_just_pressed(<span class="str">"jump"</span>) <span class="kw">and</span> is_on_floor():
+        velocity.y = <span class="var">JUMP_VELOCITY</span>
+        anim.play(<span class="str">"jump"</span>)
+
+    <span class="cm"># Dash</span>
+    <span class="kw">if</span> <span class="fn">Input</span>.is_action_just_pressed(<span class="str">"dash"</span>) <span class="kw">and</span> can_dash:
+        _start_dash()
+
+    <span class="cm"># Movimentação horizontal</span>
+    <span class="kw">var</span> <span class="var">direction</span> = <span class="fn">Input</span>.get_axis(<span class="str">"move_left"</span>, <span class="str">"move_right"</span>)
+    <span class="kw">if</span> direction:
+        velocity.x = direction * <span class="var">SPEED</span>
+        sprite.flip_h = direction < <span class="num">0</span>
+        <span class="kw">if</span> is_on_floor(): anim.play(<span class="str">"run"</span>)
+    <span class="kw">else</span>:
+        velocity.x = <span class="fn">move_toward</span>(velocity.x, <span class="num">0</span>, <span class="var">SPEED</span>)
+        <span class="kw">if</span> is_on_floor(): anim.play(<span class="str">"idle"</span>)
+
+    <span class="fn">move_and_slide</span>()
+
+<span class="kw">func</span> <span class="fn">_start_dash</span>() -> <span class="type">void</span>:
+    is_dashing = <span class="kw">true</span>
+    can_dash = <span class="kw">false</span>
+    velocity.x = sprite.flip_h <span class="kw">and</span> -<span class="var">DASH_SPEED</span> <span class="kw">or</span> <span class="var">DASH_SPEED</span>
+    anim.play(<span class="str">"dash"</span>)
+    dash_timer.start()
+
+<span class="kw">func</span> <span class="fn">_on_dash_timer_timeout</span>() -> <span class="type">void</span>:
+    is_dashing = <span class="kw">false</span>
+    can_dash = <span class="kw">true</span>
+</div>
+        </div>
+        <div style="margin-top:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+          <button class="btn-sm" onclick="sendPrompt('Adicione sistema de saúde e morte ao código do personagem 2D')">+ Saúde ↗</button>
+          <button class="btn-sm" onclick="sendPrompt('Como adicionar double jump ao personagem 2D em GDScript?')">+ Double Jump ↗</button>
+          <button class="btn-sm" onclick="sendPrompt('Como adicionar wall jump ao personagem 2D em GDScript Godot 4?')">+ Wall Jump ↗</button>
+          <button class="btn-sm" onclick="sendPrompt('Explique cada linha deste GDScript de personagem 2D')">Explicar ↗</button>
+        </div>
+      </div>
+
+      <!-- DOCS PAGE -->
+      <div class="page" id="page-docs">
+        <div class="section-hd" style="margin-bottom:16px">
+          <h2>Documentação Godot 4.6</h2>
+          <button class="btn-sm" onclick="openLink('https://docs.godotengine.org/en/stable/')"><i class="ti ti-external-link" aria-hidden="true"></i>Docs oficiais</button>
+        </div>
+        <div class="doc-grid">
+          <div class="doc-card" onclick="sendPrompt('Explique o que é CharacterBody2D na Godot 4 de forma didática com exemplos')"><div class="dc-head"><div class="dc-ico"><i class="ti ti-user" aria-hidden="true"></i></div><h3>CharacterBody2D</h3></div><p>Nó base para personagens com física controlada por código. move_and_slide, colisões e slopes.</p><div class="dc-tags"><span class="tag">Física</span><span class="tag">Movimento</span><span class="tag">Colisão</span></div></div>
+          <div class="doc-card" onclick="sendPrompt('Explique o sistema de Sinais na Godot 4 de forma didática com exemplos práticos')"><div class="dc-head"><div class="dc-ico"><i class="ti ti-antenna" aria-hidden="true"></i></div><h3>Signals (Sinais)</h3></div><p>Padrão Observer nativo da Godot. Comunicação desacoplada entre nós e cenas.</p><div class="dc-tags"><span class="tag">Sinais</span><span class="tag">Observer</span><span class="tag">Eventos</span></div></div>
+          <div class="doc-card" onclick="sendPrompt('Explique AnimationPlayer e AnimatedSprite2D na Godot 4 com exemplos')"><div class="dc-head"><div class="dc-ico"><i class="ti ti-player-play" aria-hidden="true"></i></div><h3>AnimationPlayer</h3></div><p>Sistema de animações por keyframe. Animação de propriedades, callbacks e blend.</p><div class="dc-tags"><span class="tag">Animações</span><span class="tag">Keyframe</span></div></div>
+          <div class="doc-card" onclick="sendPrompt('Explique o TileMap e TileSet da Godot 4.6 completo com exemplos')"><div class="dc-head"><div class="dc-ico"><i class="ti ti-grid-dots" aria-hidden="true"></i></div><h3>TileMap & TileSet</h3></div><p>Sistema de tiles para criar fases. AutoTile, terrenos, colisões e camadas.</p><div class="dc-tags"><span class="tag">TileMap</span><span class="tag">Fases</span><span class="tag">Terrenos</span></div></div>
+          <div class="doc-card" onclick="sendPrompt('Explique o sistema de grupos e gerenciamento de nós na Godot 4')"><div class="dc-head"><div class="dc-ico"><i class="ti ti-sitemap" aria-hidden="true"></i></div><h3>SceneTree & Nós</h3></div><p>Hierarquia de cenas, grupos, get_node(), instâncias e cenas empacotadas.</p><div class="dc-tags"><span class="tag">Cenas</span><span class="tag">Nós</span><span class="tag">Grupos</span></div></div>
+          <div class="doc-card" onclick="sendPrompt('Explique o sistema de ResourceSaver e FileAccess para Save System na Godot 4')"><div class="dc-head"><div class="dc-ico"><i class="ti ti-device-floppy" aria-hidden="true"></i></div><h3>Resources & FileAccess</h3></div><p>Salvar e carregar dados, Resources customizados e FileAccess para save systems.</p><div class="dc-tags"><span class="tag">Recursos</span><span class="tag">Save</span><span class="tag">JSON</span></div></div>
+        </div>
+      </div>
+
+      <!-- SISTEMAS PAGE -->
+      <div class="page" id="page-sistemas">
+        <div class="section-hd" style="margin-bottom:16px">
+          <h2>Sistemas prontos para usar</h2>
+          <button class="btn-sm"><i class="ti ti-filter" aria-hidden="true"></i>Filtrar</button>
+        </div>
+        <div class="systems-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="sys-card" onclick="sendPrompt('Sistema completo de Personagem 2D em GDScript Godot 4 com teoria e código')"><div class="sys-ico">🧍</div><div class="sys-name">Personagem 2D</div><div class="sys-tag">iniciante</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Movimentação 2D GDScript completo com walk, run, dash')"><div class="sys-ico">🏃</div><div class="sys-name">Movimentação</div><div class="sys-tag">iniciante</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Pulo com coyote time e jump buffer em GDScript Godot 4')"><div class="sys-ico">⬆️</div><div class="sys-name">Pulo avançado</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Dash com iframes e cooldown em GDScript Godot 4')"><div class="sys-ico">💨</div><div class="sys-name">Dash & Iframes</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Ataque com hitbox e hurtbox em GDScript Godot 4')"><div class="sys-ico">⚔️</div><div class="sys-name">Ataque & Hitbox</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de Animações com AnimationTree e blend spaces Godot 4')"><div class="sys-ico">🎬</div><div class="sys-name">AnimationTree</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Inimigos com IA de patrulha e perseguição em GDScript Godot 4')"><div class="sys-ico">👾</div><div class="sys-name">IA de inimigos</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Barra de vida com tween e dano em GDScript Godot 4')"><div class="sys-ico">❤️</div><div class="sys-name">Barra de vida</div><div class="sys-tag">iniciante</div></div>
+          <div class="sys-card" onclick="sendPrompt('Inventário 2D com drag and drop em GDScript Godot 4')"><div class="sys-ico">🎒</div><div class="sys-name">Inventário</div><div class="sys-tag">avançado</div></div>
+          <div class="sys-card" onclick="sendPrompt('Save System com JSON e encryption em GDScript Godot 4')"><div class="sys-ico">💾</div><div class="sys-name">Save System</div><div class="sys-tag">avançado</div></div>
+          <div class="sys-card" onclick="sendPrompt('Câmera 2D com lerp e limites em GDScript Godot 4')"><div class="sys-ico">📷</div><div class="sys-name">Câmera 2D</div><div class="sys-tag">iniciante</div></div>
+          <div class="sys-card" onclick="sendPrompt('Máquina de estados finita reutilizável em GDScript Godot 4')"><div class="sys-ico">🔁</div><div class="sys-name">State Machine</div><div class="sys-tag">avançado</div></div>
+          <div class="sys-card" onclick="sendPrompt('Sistema de partículas 2D em GDScript Godot 4')"><div class="sys-ico">✨</div><div class="sys-name">Partículas</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('TileMap com geração procedural em GDScript Godot 4')"><div class="sys-ico">🗺️</div><div class="sys-name">TileMap</div><div class="sys-tag">intermediário</div></div>
+          <div class="sys-card" onclick="sendPrompt('Shader 2D de pixel art e outline em GDScript e GLSL Godot 4')"><div class="sys-ico">🎨</div><div class="sys-name">Shaders 2D</div><div class="sys-tag">avançado</div></div>
+          <div class="sys-card" onclick="sendPrompt('Multiplayer básico com ENet em GDScript Godot 4')"><div class="sys-ico">🌐</div><div class="sys-name">Multiplayer</div><div class="sys-tag">avançado</div></div>
+        </div>
+      </div>
+
+      <!-- SNIPPETS PAGE -->
+      <div class="page" id="page-snippets">
+        <div class="section-hd" style="margin-bottom:14px">
+          <h2>Snippets reutilizáveis</h2>
+          <button class="btn-sm btn-accent" onclick="sendPrompt('Quero contribuir com um novo snippet GDScript')"><i class="ti ti-plus" aria-hidden="true"></i>Adicionar ↗</button>
+        </div>
+        <div class="snippet-grid">
+          <div class="snippet-card" onclick="sendPrompt('Explique este snippet de singleton autoload em GDScript Godot 4')"><div class="snippet-head"><span class="sname">Singleton / Autoload</span><span class="stag">padrões</span></div><div class="snippet-code"><span class="cm"># autoload/game_manager.gd</span>
+<span class="kw">extends</span> <span class="type">Node</span>
+
+<span class="kw">signal</span> <span class="fn">score_changed</span>(value)
+<span class="kw">var</span> <span class="var">score</span>: <span class="type">int</span> = <span class="num">0</span>
+
+<span class="kw">func</span> <span class="fn">add_score</span>(pts: <span class="type">int</span>):
+    score += pts
+    <span class="fn">score_changed</span>.emit(score)</div></div>
+          <div class="snippet-card" onclick="sendPrompt('Explique este snippet de state machine em GDScript Godot 4')"><div class="snippet-head"><span class="sname">State Machine base</span><span class="stag">arquitetura</span></div><div class="snippet-code"><span class="kw">class_name</span> <span class="type">State</span>
+<span class="kw">extends</span> <span class="type">Node</span>
+
+<span class="kw">func</span> <span class="fn">enter</span>(): <span class="kw">pass</span>
+<span class="kw">func</span> <span class="fn">exit</span>(): <span class="kw">pass</span>
+<span class="kw">func</span> <span class="fn">update</span>(d): <span class="kw">pass</span>
+<span class="kw">func</span> <span class="fn">physics</span>(d): <span class="kw">pass</span></div></div>
+          <div class="snippet-card" onclick="sendPrompt('Explique este snippet de tween para UI em GDScript Godot 4')"><div class="snippet-head"><span class="sname">Tween UI animado</span><span class="stag">UI</span></div><div class="snippet-code"><span class="kw">func</span> <span class="fn">show_panel</span>():
+    <span class="kw">var</span> <span class="var">tw</span> = <span class="fn">create_tween</span>()
+    panel.modulate.a = <span class="num">0</span>
+    tw.tween_property(panel,
+        <span class="str">"modulate:a"</span>, <span class="num">1.0</span>, <span class="num">0.3</span>)
+    tw.tween_property(panel,
+        <span class="str">"scale"</span>, <span class="fn">Vector2</span>.<span class="var">ONE</span>, <span class="num">0.2</span>)</div></div>
+          <div class="snippet-card" onclick="sendPrompt('Explique este snippet de objeto pooling em GDScript Godot 4')"><div class="snippet-head"><span class="sname">Object Pool</span><span class="stag">otimização</span></div><div class="snippet-code"><span class="kw">var</span> <span class="var">_pool</span>: <span class="type">Array</span> = []
+
+<span class="kw">func</span> <span class="fn">get_object</span>() -> <span class="type">Node</span>:
+    <span class="kw">if</span> _pool.is_empty():
+        <span class="kw">return</span> <span class="var">SCENE</span>.instantiate()
+    <span class="kw">return</span> _pool.pop_back()
+
+<span class="kw">func</span> <span class="fn">recycle</span>(obj: <span class="type">Node</span>):
+    obj.hide()
+    _pool.append(obj)</div></div>
+        </div>
+      </div>
+
+      <!-- RANKING PAGE -->
+      <div class="page" id="page-ranking">
+        <div class="section-hd" style="margin-bottom:16px"><h2>Ranking de contribuidores</h2></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-md);padding:10px 14px;display:flex;align-items:center;gap:12px"><span style="font-size:16px;width:24px;text-align:center">🥇</span><div style="width:30px;height:30px;border-radius:50%;background:rgba(196,135,26,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#C4871A">GV</div><div style="flex:1"><div style="font-size:12.5px;font-weight:500">GodotVet</div><div style="font-size:11px;color:var(--txt2)">38 soluções · 12 sistemas</div></div><span style="font-size:13px;font-weight:500;color:#C4871A">2840 XP</span></div>
+          <div style="background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-md);padding:10px 14px;display:flex;align-items:center;gap:12px"><span style="font-size:16px;width:24px;text-align:center">🥈</span><div style="width:30px;height:30px;border-radius:50%;background:rgba(124,110,247,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent)">PX</div><div style="flex:1"><div style="font-size:12.5px;font-weight:500">PixelCoder</div><div style="font-size:11px;color:var(--txt2)">25 soluções · 8 sistemas</div></div><span style="font-size:13px;font-weight:500;color:var(--txt2)">1920 XP</span></div>
+          <div style="background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-md);padding:10px 14px;display:flex;align-items:center;gap:12px"><span style="font-size:16px;width:24px;text-align:center">🥉</span><div style="width:30px;height:30px;border-radius:50%;background:rgba(59,158,110,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#3B9E6E">IN</div><div style="flex:1"><div style="font-size:12.5px;font-weight:500">IndieDev_BR</div><div style="font-size:11px;color:var(--txt2)">19 soluções · 5 sistemas</div></div><span style="font-size:13px;font-weight:500;color:var(--txt2)">1440 XP</span></div>
+          <div style="background:rgba(124,110,247,.05);border:1px solid rgba(124,110,247,.25);border-radius:var(--border-radius-md);padding:10px 14px;display:flex;align-items:center;gap:12px"><span style="font-size:16px;width:24px;text-align:center">👤</span><div style="width:30px;height:30px;border-radius:50%;background:rgba(124,110,247,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent)">DC</div><div style="flex:1"><div style="font-size:12.5px;font-weight:500">Dev Colaborador <span style="font-size:10px;color:var(--accent)">(você)</span></div><div style="font-size:11px;color:var(--txt2)">8 soluções · 3 sistemas</div></div><span style="font-size:13px;font-weight:500;color:var(--accent)">840 XP</span></div>
+        </div>
+      </div>
+
+      <!-- EXERCICIOS PAGE -->
+      <div class="page" id="page-exercicios">
+        <div class="section-hd" style="margin-bottom:16px"><h2>Exercícios & Desafios</h2></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+          <div style="background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-lg);padding:14px;cursor:pointer" onclick="sendPrompt('Me dê um exercício de GDScript nível iniciante sobre variáveis e funções')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:18px">🎯</span><h3 style="font-size:13px;font-weight:500">Quiz de GDScript</h3><span style="margin-left:auto;font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(59,158,110,.15);color:#3B9E6E">Iniciante</span></div><p style="font-size:11.5px;color:var(--txt2)">10 perguntas sobre sintaxe, tipos e funções básicas do GDScript 2.0.</p></div>
+          <div style="background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-lg);padding:14px;cursor:pointer" onclick="sendPrompt('Me dê um desafio de lógica para implementar em GDScript Godot 4')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:18px">🧩</span><h3 style="font-size:13px;font-weight:500">Desafio de lógica</h3><span style="margin-left:auto;font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(196,135,26,.15);color:#C4871A">Intermediário</span></div><p style="font-size:11.5px;color:var(--txt2)">Implemente um pathfinding simples ou algoritmo de IA para inimigos.</p></div>
+          <div style="background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-lg);padding:14px;cursor:pointer" onclick="sendPrompt('Me dê um exercício de refatoração de código GDScript Godot 4')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:18px">🔧</span><h3 style="font-size:13px;font-weight:500">Refatoração</h3><span style="margin-left:auto;font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(196,135,26,.15);color:#C4871A">Intermediário</span></div><p style="font-size:11.5px;color:var(--txt2)">Dado um código com problemas, melhore a arquitetura e boas práticas.</p></div>
+          <div style="background:var(--bg2);border:0.5px solid var(--bord);border-radius:var(--border-radius-lg);padding:14px;cursor:pointer" onclick="sendPrompt('Me dê um desafio avançado de otimização de GDScript Godot 4')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:18px">⚡</span><h3 style="font-size:13px;font-weight:500">Otimização</h3><span style="margin-left:auto;font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(192,57,43,.15);color:#C0392B">Avançado</span></div><p style="font-size:11.5px;color:var(--txt2)">Profiling, object pooling, draw calls e otimização de física 2D.</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function nav(page) {
+  document.querySelectorAll('.sb-item').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+page+"'"));
+  });
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-'+page);
+  if (target) target.classList.add('active');
+}
+</script>
